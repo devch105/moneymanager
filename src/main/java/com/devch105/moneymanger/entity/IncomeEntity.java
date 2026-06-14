@@ -34,7 +34,8 @@ public class IncomeEntity {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    (fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="category_id", nullable = false)
     private CategoryEntity category;
 

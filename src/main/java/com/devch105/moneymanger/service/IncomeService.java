@@ -1,16 +1,19 @@
 package com.devch105.moneymanger.service;
+
 import com.devch105.moneymanger.dto.IncomeDTO;
 import com.devch105.moneymanger.entity.CategoryEntity;
 
-import com.devch105.moneymanger.entity.ExpenseEntity;
+
 import com.devch105.moneymanger.entity.IncomeEntity;
 import com.devch105.moneymanger.entity.ProfileEntity;
 import com.devch105.moneymanger.repository.CategoryRepository;
 
 import com.devch105.moneymanger.repository.IncomeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -54,6 +57,22 @@ public class IncomeService {
 
 
 
+    public List<IncomeDTO> getLatest5IncomesForCurrentUser(){
+        ProfileEntity profile = profileService.getCurrentProfile();
+        List<IncomeEntity > getLatest5Incomes =  incomeRepository.findTop5ByProfileIdOrderByDateDesc(profile.getId());
+        return getLatest5Incomes.stream().map(this::toDTO).toList();
+    }
+
+    public BigDecimal totalIncomemForCurrentUser(){
+        ProfileEntity profile =  profileService.getCurrentProfile();
+        return  incomeRepository.findTotalIncomeByProfileId(profile.getId());
+    }
+
+    public List<IncomeDTO> filterIncomes(LocalDate startDate, LocalDate endDate , String keyword, Sort sort){
+       ProfileEntity profile = profileService.getCurrentProfile();
+       List<IncomeEntity> list = incomeRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(profile.getId(),startDate,endDate,keyword,sort);
+       return list.stream().map(this::toDTO).toList();
+    }
 
 
 

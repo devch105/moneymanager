@@ -7,8 +7,10 @@ import com.devch105.moneymanger.entity.ProfileEntity;
 import com.devch105.moneymanger.repository.CategoryRepository;
 import com.devch105.moneymanger.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -49,6 +51,30 @@ public class ExpenseService {
         }
         expenseRepository.delete(entity);
     }
+
+    public List<ExpenseDTO> getlatest5ExpensesForCurrentUser(){
+        ProfileEntity profile = profileService.getCurrentProfile();
+         List<ExpenseEntity > latest5Expenses =  expenseRepository.findTop5ByProfileIdOrderByDateDesc(profile.getId());
+         return latest5Expenses.stream().map(this::toDTO).toList();
+    }
+
+    public BigDecimal totalExpensesForCurrentUser(){
+        ProfileEntity profile =  profileService.getCurrentProfile();
+       return  expenseRepository.findTotalExpenseByProfileId(profile.getId());
+    }
+
+    public List<ExpenseDTO> filterExpenses(LocalDate startDate, LocalDate endDate , String keyword, Sort sort){
+      ProfileEntity profile =   profileService.getCurrentProfile();
+      List<ExpenseEntity>  list =   expenseRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(profile.getId(), startDate, endDate, keyword, sort);
+      return list.stream().map(this::toDTO).toList();
+    }
+
+    public List<ExpenseDTO> getExpensesForCurrentUserOnDate(Long profileId, LocalDate date){
+        List<ExpenseEntity> entities = expenseRepository.findByProfileIdAndDate(profileId, date);
+        return entities.stream().map(this::toDTO).toList();
+    }
+
+
 
 
 
