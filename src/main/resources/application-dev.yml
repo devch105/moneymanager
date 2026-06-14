@@ -3,7 +3,6 @@ spring:
     url: jdbc:mysql://localhost:3306/moneymanager
     username: dev
     password: Dev!@123
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -12,29 +11,17 @@ spring:
       hibernate:
         format_sql: true
 
-  mail:
-    host: smtp-relay.brevo.com
-    port: 587
-    username:  ${BREVO_USERNAME}
-    password: ${BREVO_PASSWORD_KEY}
-    protocol: smtp
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
-
 jwt:
   secret: ${JWT_SECRET_KEY}
   expiration: ${JWT_SECRET_KEY_EXPIRATION}
 
-#${BREVO_USER_EMAIL}
+brevo:
+  api:
+    key: ${BREVO_PASSWORD_KEY}
+
 app:
   mail:
-    from: hello@gmail.com
-
+    from: devdhama23@gmail.com
 
 server:
   address: 0.0.0.0
@@ -48,11 +35,3 @@ money:
       url: ${FRONTEND_URL}
     activation:
       url: ${BACKEND_ACTIVATION_URL}
-
-
-
-
-
-#logging:
-#  level:
-#    org.springframework.mail: DEBUG

@@ -14,16 +14,19 @@ spring:
 
   mail:
     host: smtp-relay.brevo.com
-    port: 587
-    username:  ${BREVO_USERNAME}
+    port: 465
+    username: ${BREVO_USERNAME}
     password: ${BREVO_PASSWORD_KEY}
     protocol: smtp
     properties:
       mail:
         smtp:
           auth: true
-          starttls:
+          ssl:
             enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 
 jwt:

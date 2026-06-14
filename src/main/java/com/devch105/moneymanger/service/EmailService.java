@@ -32,7 +32,7 @@ public class EmailService {
     public void test() {
         System.out.println("MAIL USERNAME = " + username);
         System.out.println("FROM EMAIL = " + fromEmail);
-       // System.out.println("MAIL PASSWORD = " + password);
+        // System.out.println("MAIL PASSWORD = " + password);
     }
 
 
