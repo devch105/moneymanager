@@ -39,7 +39,7 @@ server:
 #  port: 8080
   servlet:
     context-path: /api/v1.0
-  port: ${PORT:8080}
+  port: 8080
 
 money:
   manager:
