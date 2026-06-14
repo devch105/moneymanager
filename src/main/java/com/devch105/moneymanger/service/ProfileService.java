@@ -8,6 +8,7 @@ import com.devch105.moneymanger.util.JWTUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,7 +32,8 @@ public class ProfileService {
     private  final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
 
-
+    @Value("${money.manager.activation.url}")
+    private  String activationUrl;
 
 
    public boolean isAccountActive(String email){
@@ -59,7 +61,7 @@ public class ProfileService {
        newProfile.setActivationToken(UUID.randomUUID().toString());
        newProfile = profileRepository.save(newProfile);
        // send activation link
-       String activationLink = "http://localhost:8080/api/v1.0/activate?token=" + newProfile.getActivationToken();
+       String activationLink = activationUrl+"/api/v1.0/activate?token=" + newProfile.getActivationToken();
        String subject = "Activate your Money Manager Account";
        String emailBody = "Click on the following link to activate your Money Manager account : \n "+activationLink;
 

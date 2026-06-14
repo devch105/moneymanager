@@ -28,7 +28,7 @@ public class FilterController {
     @GetMapping
     public ResponseEntity<?> filterTransactions(@RequestBody FilterDTO filterDTO){
         // fields to pass In
-        LocalDate startDate = filterDTO.getStartDate()!=null?filterDTO.getStartDate():LocalDate.MIN;
+        LocalDate startDate = filterDTO.getStartDate()!=null?filterDTO.getStartDate():LocalDate.of(2000, 1, 1);
         LocalDate endDate = filterDTO.getEndDate()!=null?filterDTO.getEndDate():LocalDate.now();
          String keyword = filterDTO.getKeyword()!=null?filterDTO.getKeyword():"";
          String sortField = filterDTO.getSortField()!=null?filterDTO.getSortField():"date";

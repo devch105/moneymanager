@@ -1,0 +1,62 @@
+spring:
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  mail:
+    host: smtp-relay.brevo.com
+    port: 587
+    username:  ${BREVO_USERNAME}
+    password: ${BREVO_PASSWORD_KEY}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  expiration: ${JWT_SECRET_KEY_EXPIRATION}
+
+app:
+  mail:
+    from: ${BREVO_USER_EMAIL}
+
+server:
+  address: 0.0.0.0
+#  port: 8080
+  servlet:
+    context-path: /api/v1.0
+  port: ${PORT:8080}
+
+money:
+  manager:
+    frontend:
+      url: ${FRONTEND_URL}
+    activation:
+      url: ${BACKEND_ACTIVATION_URL}
+
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.tool.schema: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+
+
+
+
+#  level:
+#    org.springframework.mail: DEBUG
