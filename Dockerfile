@@ -1,6 +1,9 @@
 FROM eclipse-temurin:21-jre
+
 WORKDIR /app
 
-LABEL authors="dev-dhama"
+COPY target/moneymanger-0.0.1-SNAPSHOT.jar app.jar
 
-ENTRYPOINT ["top", "-b"]
+EXPOSE 8080
+
+ENTRYPOINT ["java","-jar","app.jar"]
