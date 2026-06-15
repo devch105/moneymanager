@@ -56,17 +56,75 @@ public class ProfileService {
        return toDTO(user);
    }
 
+
+   @Transactional
    public ProfileDTO registerProfile(ProfileDTO profileDTO){
+       if(profileRepository
+               .findByEmail(profileDTO.getEmail())
+               .isPresent()){
+
+           throw new RuntimeException(
+                   "Email already registered"
+           );
+       }
        ProfileEntity newProfile = toEntity(profileDTO);
        newProfile.setActivationToken(UUID.randomUUID().toString());
        newProfile = profileRepository.save(newProfile);
        // send activation link
        String activationLink = activationUrl+"/api/v1.0/activate?token=" + newProfile.getActivationToken();
        String subject = "Activate your Money Manager Account";
-       String emailBody = "Click on the following link to activate your Money Manager account : \n "+activationLink;
+       String emailBody = """
+        <div style="font-family:Arial,sans-serif">
 
-       emailService.sendEmail(newProfile.getEmail(), subject, emailBody);
+            <h2>Welcome to Money Manager</h2>
 
+            <p>
+                Thank you for registering.
+            </p>
+
+            <p>
+                Click the button below to activate your account:
+            </p>
+
+            <a href="%s"
+               style="
+                    background:#2563eb;
+                    color:white;
+                    padding:12px 20px;
+                    text-decoration:none;
+                    border-radius:6px;
+               ">
+                Activate Account
+            </a>
+
+            <p>
+                If the button does not work,
+                use the link below:
+            </p>
+
+            <p>%s</p>
+
+        </div>
+        """.formatted(
+               activationLink,
+               activationLink
+       );
+       try {
+
+           emailService.sendEmail(
+                   newProfile.getEmail(),
+                   subject,
+                   emailBody
+           );
+
+       } catch (Exception e) {
+
+           System.err.println(
+                   "Failed to send email: "
+                           + e.getMessage()
+           );
+
+       }
        return toDTO(newProfile);
    }
 

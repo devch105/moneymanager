@@ -12,22 +12,25 @@ spring:
       hibernate:
         format_sql: true
 
-  mail:
-    host: smtp-relay.brevo.com
-    port: 465
-    username: ${BREVO_USERNAME}
-    password: ${BREVO_PASSWORD_KEY}
-    protocol: smtp
-    properties:
-      mail:
-        smtp:
-          auth: true
-          ssl:
-            enable: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
+#  mail:
+#    host: smtp-relay.brevo.com
+#    port: 465
+#    username: ${BREVO_USERNAME}
+#    password: ${BREVO_PASSWORD_KEY}
+#    protocol: smtp
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          ssl:
+#            enable: true
+#          connectiontimeout: 5000
+#          timeout: 5000
+#          writetimeout: 5000
 
+resend:
+  api:
+    key: ${RESEND_API_KEY}
 
 jwt:
   secret: ${JWT_SECRET_KEY}
@@ -55,8 +58,8 @@ money:
 logging:
   level:
     org.hibernate.SQL: DEBUG
-    org.hibernate.tool.schema: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
+
+
 
 
 

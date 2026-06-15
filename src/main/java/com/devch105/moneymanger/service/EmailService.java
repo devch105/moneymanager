@@ -1,52 +1,78 @@
 package com.devch105.moneymanger.service;
 
+import com.devch105.moneymanger.dto.ResendEmailRequestDTO;
 import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class EmailService {
 
+    private final WebClient.Builder webClientBuilder;
 
-    private final JavaMailSender mailSender;
-
-
-
-    @Value("${spring.mail.username}")
-    private String username;
-//    @Value("${spring.mail.password}")
-//    private String password;
+    @Value("${resend.api.key}")
+    private String apiKey;
 
     @Value("${app.mail.from}")
     private String fromEmail;
 
     @PostConstruct
-    public void test() {
-        System.out.println("MAIL USERNAME = " + username);
-        System.out.println("FROM EMAIL = " + fromEmail);
-        // System.out.println("MAIL PASSWORD = " + password);
+    public void init() {
+        System.out.println("Initializing email service!!");
+
+        System.out.println("From email: " + fromEmail);
     }
 
+    public void sendEmail(
+            String to,
+            String subject,
+            String body
+    ) {
 
-    public void sendEmail(String to, String subject, String body) {
-        try{
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
-            mailSender.send(message);
-            log.info("SEND EMAIL TO EMAIL: " + to);
-        }catch (Exception e){
-            log.error("Full email error", e);
+        ResendEmailRequestDTO request =
+                new ResendEmailRequestDTO();
+
+        request.setFrom(fromEmail);
+        request.setTo(List.of(to));
+        request.setSubject(subject);
+        request.setHtml(body);
+
+        try {
+
+            String response = webClientBuilder.build()
+                    .post()
+                    .uri("https://api.resend.com/emails")
+                    .header("Authorization", "Bearer " + apiKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(request)
+                    .retrieve()
+                    .onStatus(
+                            status -> status.isError(),
+                            clientResponse ->
+                                    clientResponse.bodyToMono(String.class)
+                                            .flatMap(errorBody -> {
+                                                log.error("Resend Error Body: {}", errorBody);
+                                                return reactor.core.publisher.Mono.error(
+                                                        new RuntimeException(errorBody)
+                                                );
+                                            })
+                    )
+                    .bodyToMono(String.class)
+                    .block();
+
+            log.info("Email sent successfully: {}", response);
+
+        } catch (Exception e) {
+
+            log.error("Failed to send email", e);
             throw e;
         }
     }
