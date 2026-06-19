@@ -61,8 +61,8 @@ public class DashboardService {
            return cmp;
 
        }).collect(Collectors.toList());
-        map.put("totalBalance",incomeService.totalIncomemForCurrentUser().subtract(expenseService.totalExpensesForCurrentUser()));
-        map.put("totalIncome",incomeService.totalIncomemForCurrentUser());
+        map.put("totalBalance",incomeService.getTotalIncomemForCurrentUser().subtract(expenseService.totalExpensesForCurrentUser()));
+        map.put("totalIncome",incomeService.getTotalIncomemForCurrentUser());
         map.put("totalExpense",expenseService.totalExpensesForCurrentUser());
         map.put("recent5Expenses",latestExpenses);
         map.put("recent5Incomes",latestIncomes);

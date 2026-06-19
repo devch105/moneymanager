@@ -7,6 +7,7 @@ import com.devch105.moneymanger.repository.ProfileRepository;
 import com.devch105.moneymanger.util.JWTUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,7 +24,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-
+@Slf4j
 public class ProfileService {
 
     private final PasswordEncoder passwordEncoder;
@@ -42,15 +43,18 @@ public class ProfileService {
 
    public ProfileEntity getCurrentProfile(){
        Authentication authenticatedUser = SecurityContextHolder.getContext().getAuthentication();
-      return  profileRepository.findByEmail(authenticatedUser.getName())
-              .orElseThrow(()-> new UsernameNotFoundException("User not found in database : "+authenticatedUser.getName()));
+       ProfileEntity entity = profileRepository.findByEmail(authenticatedUser.getName()).orElseThrow(()-> new UsernameNotFoundException("User not found in database : "+authenticatedUser.getName()));
+       log.info("Fetching Current Profile : "+entity);
+       return  entity;
+
    }
 
    public ProfileDTO getPublicProfile(String email){
        ProfileEntity user = null;
-       if(email == null){
+       if(email == null || email.isEmpty()){
            user = getCurrentProfile();
        }else{
+           log.info("Fetching Public Profile : "+user);
            user = profileRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("User not found in database : "+email));
        }
        return toDTO(user);

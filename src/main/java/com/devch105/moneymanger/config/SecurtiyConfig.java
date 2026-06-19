@@ -41,6 +41,7 @@ public class SecurtiyConfig {
                                     "/health/**",
                                     "/login/**",
                                     "/register/**",
+                                    "/error/**",
                                     "/activate/**")
                                     .permitAll()
                             .anyRequest().authenticated())

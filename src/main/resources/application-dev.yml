@@ -40,3 +40,7 @@ money:
       url: ${FRONTEND_URL}
     activation:
       url: ${BACKEND_ACTIVATION_URL}
+#
+#logging:
+#  level:
+#    org.springframework.security: TRACE

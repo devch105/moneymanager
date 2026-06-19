@@ -46,13 +46,23 @@ public class IncomeService {
         return entities.stream().map(this::toDTO).toList();
     }
 
-    public  void  deleteIncome(Long incomeId){
-        ProfileEntity profile =  profileService.getCurrentProfile();
-        IncomeEntity entity = incomeRepository.findById(incomeId).orElseThrow(()-> new RuntimeException("Expense not found"));
-        if(!entity.getProfile().getId().equals(profile.getId())){
+    public void deleteIncome(Long incomeId) {
+        System.out.println("Deleting income id = " + incomeId);
+
+        ProfileEntity profile = profileService.getCurrentProfile();
+
+        IncomeEntity entity = incomeRepository.findById(incomeId)
+                .orElseThrow(() -> new RuntimeException("Income not found"));
+
+        System.out.println("Found income = " + entity.getId());
+
+        if (!entity.getProfile().getId().equals(profile.getId())) {
             throw new RuntimeException("UnAuthorized to Delete this Expense");
         }
+
         incomeRepository.delete(entity);
+
+        System.out.println("Deleted income = " + incomeId);
     }
 
 
@@ -63,7 +73,7 @@ public class IncomeService {
         return getLatest5Incomes.stream().map(this::toDTO).toList();
     }
 
-    public BigDecimal totalIncomemForCurrentUser(){
+    public BigDecimal getTotalIncomemForCurrentUser(){
         ProfileEntity profile =  profileService.getCurrentProfile();
         return  incomeRepository.findTotalIncomeByProfileId(profile.getId());
     }
