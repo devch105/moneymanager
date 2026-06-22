@@ -66,7 +66,8 @@ public class ExpenseService {
 
     public BigDecimal totalExpensesForCurrentUser(){
         ProfileEntity profile =  profileService.getCurrentProfile();
-       return  expenseRepository.findTotalExpenseByProfileId(profile.getId());
+       BigDecimal  totalExpense = expenseRepository.findTotalExpenseByProfileId(profile.getId());
+       return  (totalExpense!=null )? totalExpense : BigDecimal.ZERO;
     }
 
     public List<ExpenseDTO> filterExpenses(LocalDate startDate, LocalDate endDate , String keyword, Sort sort){

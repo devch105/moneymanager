@@ -78,7 +78,8 @@ public class IncomeService {
 
     public BigDecimal getTotalIncomemForCurrentUser(){
         ProfileEntity profile =  profileService.getCurrentProfile();
-        return  incomeRepository.findTotalIncomeByProfileId(profile.getId());
+        BigDecimal totalIncome = incomeRepository.findTotalIncomeByProfileId(profile.getId());
+        return  (totalIncome != null )? totalIncome : BigDecimal.ZERO;
     }
 
     public List<IncomeDTO> filterIncomes(LocalDate startDate, LocalDate endDate , String keyword, Sort sort){
