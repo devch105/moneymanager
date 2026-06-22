@@ -5,6 +5,7 @@ import com.devch105.moneymanger.dto.IncomeDTO;
 import com.devch105.moneymanger.dto.RecentTransactionDTO;
 import com.devch105.moneymanger.entity.ProfileEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -18,11 +19,11 @@ import static java.util.stream.Stream.concat;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DashboardService {
     private final IncomeService incomeService;
     private final ExpenseService expenseService;
     private final ProfileService profileService;
-
 
     public Map<String,Object>  getDashboardData(){
        ProfileEntity currentProfile =  profileService.getCurrentProfile();
@@ -67,6 +68,7 @@ public class DashboardService {
         map.put("recent5Expenses",latestExpenses);
         map.put("recent5Incomes",latestIncomes);
         map.put("recent5Transactions",recentTransaction);
+        log.info("Dasboard Service is been calling");
         return map;
     }
 }

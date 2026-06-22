@@ -24,6 +24,7 @@ public class IncomeService {
     private final CategoryRepository categoryRepository;
     private final IncomeRepository incomeRepository;
     private final ProfileService profileService;
+    private final CategoryService categoryService;
 
     // add new expense to DB
     public IncomeDTO addIncome(IncomeDTO incomeDTO) {
@@ -31,11 +32,12 @@ public class IncomeService {
         CategoryEntity category = categoryRepository.findByIdAndProfileId(incomeDTO.getCategoryId(), profile.getId()).orElseThrow(()-> new RuntimeException("Category not found"));
         IncomeEntity entity = toEntity(incomeDTO, category, profile);
         incomeRepository.save(entity);
+        categoryService.incrementTransactionCount(category);
         return toDTO(entity);
     }
 
     // reterive expenses for current month or start date or enddate
-    public List<IncomeDTO> getCurrentMonthExpensesForCurrentUser(){
+    public List<IncomeDTO> getCurrentMonthIncomesForCurrentUser(){
         ProfileEntity profile =  profileService.getCurrentProfile();
         LocalDate now = LocalDate.now();
         LocalDate startDate =  now.withDayOfMonth(1);
@@ -60,8 +62,9 @@ public class IncomeService {
             throw new RuntimeException("UnAuthorized to Delete this Expense");
         }
 
+        CategoryEntity category = entity.getCategory();
         incomeRepository.delete(entity);
-
+        categoryService.decrementTransactionCount(category);
         System.out.println("Deleted income = " + incomeId);
     }
 

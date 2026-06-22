@@ -20,6 +20,7 @@ public class DashboardController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> getDashboard() {
         Map<String, Object> response = dashboardService.getDashboardData();
+        System.out.println( "Dashboard Response: " + response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

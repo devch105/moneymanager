@@ -16,4 +16,6 @@ public class ResendEmailRequestDTO {
     private List<String> to;
     private String subject;
     private String html;
+
+    private List<AttachmentDTO> attachments;
 }

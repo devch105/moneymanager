@@ -63,6 +63,9 @@ public class CategoryService {
        try{
            ProfileEntity entity = profileService.getCurrentProfile();
            CategoryEntity categoryEntity = categoryRepository.findByIdAndProfileId(id, entity.getId()).orElseThrow(()-> new RuntimeException("Category not found"));
+           if(categoryEntity.getTransactionCount()>0){
+               throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot delete category that has transactions");
+           }
            categoryRepository.delete(categoryEntity);
        }catch(Exception e){
            log.error(e.getMessage());
@@ -71,6 +74,26 @@ public class CategoryService {
     }
 
 
+    public void incrementTransactionCount(CategoryEntity category) {
+        Long count = category.getTransactionCount() == null
+                ? 0L
+                : category.getTransactionCount();
+
+        category.setTransactionCount(count + 1);
+        categoryRepository.save(category);
+    }
+
+    public void decrementTransactionCount(CategoryEntity category) {
+        Long count = category.getTransactionCount() == null
+                ? 0L
+                : category.getTransactionCount();
+
+        category.setTransactionCount(
+                Math.max(0L, count - 1)
+        );
+
+        categoryRepository.save(category);
+    }
 
     private CategoryEntity toEntity(CategoryDTO dto , ProfileEntity profileEntity) {
          return CategoryEntity
@@ -79,6 +102,7 @@ public class CategoryService {
                 .icon(dto.getIcon())
                 .type(dto.getType())
                 .profile(profileEntity)
+                 .transactionCount(0L)
                 .build();
 
     }
@@ -93,6 +117,7 @@ public class CategoryService {
                 .type(entity.getType())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
+                .transactionCount(entity.getTransactionCount())
                 .build();
     }
 }

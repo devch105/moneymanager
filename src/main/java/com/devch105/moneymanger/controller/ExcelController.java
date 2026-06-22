@@ -29,7 +29,7 @@ public class ExcelController {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment; filename=income.xlsx");
 
-        excelService.writeIncomesToExcel(response.getOutputStream(), incomeService.getCurrentMonthExpensesForCurrentUser());
+        excelService.writeIncomesToExcel(response.getOutputStream(), incomeService.getCurrentMonthIncomesForCurrentUser());
     }
 
     @GetMapping("/download/expense")

@@ -32,5 +32,7 @@ public class CategoryEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id", nullable = false)
     private ProfileEntity profile;
+    @Builder.Default
+    private Long transactionCount = 0L;
 
 }

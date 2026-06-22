@@ -21,6 +21,9 @@ public class ExpenseService {
     private final CategoryRepository categoryRepository;
     private final ExpenseRepository expenseRepository;
     private final ProfileService profileService;
+    private final CategoryService categoryService;
+
+
 
     // add new expense to DB
     public ExpenseDTO addExpense(ExpenseDTO expenseDTO) {
@@ -28,6 +31,7 @@ public class ExpenseService {
         CategoryEntity category = categoryRepository.findByIdAndProfileId(expenseDTO.getCategoryId(), profile.getId()).orElseThrow(()-> new RuntimeException("Category not found"));
         ExpenseEntity entity = toEntity(expenseDTO, category, profile);
         expenseRepository.save(entity);
+        categoryService.incrementTransactionCount(category);
         return toDTO(entity);
     }
 
@@ -49,7 +53,9 @@ public class ExpenseService {
         if(!entity.getProfile().getId().equals(profile.getId())){
            throw new RuntimeException("UnAuthorized to Delete this Expense");
         }
+        CategoryEntity category = entity.getCategory();
         expenseRepository.delete(entity);
+        categoryService.decrementTransactionCount(category);
     }
 
     public List<ExpenseDTO> getlatest5ExpensesForCurrentUser(){

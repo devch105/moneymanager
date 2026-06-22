@@ -9,10 +9,7 @@ import com.devch105.moneymanger.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,9 +22,10 @@ public class FilterController {
     private final IncomeService incomeService;
 
 
-    @GetMapping
+    @PostMapping
     public ResponseEntity<?> filterTransactions(@RequestBody FilterDTO filterDTO){
         // fields to pass In
+        System.out.println("FilterDTO data : "+filterDTO.toString());
         LocalDate startDate = filterDTO.getStartDate()!=null?filterDTO.getStartDate():LocalDate.of(2000, 1, 1);
         LocalDate endDate = filterDTO.getEndDate()!=null?filterDTO.getEndDate():LocalDate.now();
          String keyword = filterDTO.getKeyword()!=null?filterDTO.getKeyword():"";
@@ -38,6 +36,7 @@ public class FilterController {
 
         if(filterDTO.getType().equals("income")){
            List<IncomeDTO> list =  incomeService.filterIncomes(startDate,endDate,keyword,sort);
+            System.out.println("Incomes data : "+list.toString());
            return ResponseEntity.ok(list);
         } else if (filterDTO.getType().equals("expense")) {
             List<ExpenseDTO> list = expenseService.filterExpenses(startDate,endDate,keyword,sort);
