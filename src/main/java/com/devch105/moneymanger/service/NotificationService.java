@@ -25,10 +25,10 @@ public class NotificationService {
     @Value("${money.manager.frontend.url}")
     private String frontendURl;
 
-    @Scheduled(cron = "0 0 22 * * *", zone = "Asia/Kolkata")
 
+    @Scheduled(cron = "0 0 22 * * *", zone = "Asia/Kolkata")
     public  void sendIncomeAndExpenseRemiderNotification(){
-        log.info("Income and expense Job is Started");
+        log.info(" || =========> Income and expense Job is Started <=================== ||");
         List<ProfileEntity> profiles = profileRepository.findAll();
 
         for(ProfileEntity profile : profiles){
@@ -70,6 +70,7 @@ public class NotificationService {
                             + "</div>";
             String subject = "💰 Don't Forget to Track Today's Finances";
             emailService.sendEmail(profile.getEmail(),subject,body);
+            log.info("Reminder Send  at 10PM  to : " + profile.getEmail());
         }
     }
 
@@ -155,7 +156,7 @@ public class NotificationService {
                 String subject = "📊 Your Daily Expense Summary";
 
                 emailService.sendEmail(profile.getEmail(), subject, body);
-                log.info("Mail has been sent to " + profile.getEmail());
+                log.info("Reminder mail at 11PM send to : " + profile.getEmail());
             }
         }
     }

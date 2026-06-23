@@ -70,7 +70,7 @@ public class EmailService {
                     .bodyToMono(String.class)
                     .block();
 
-            log.info("Email sent successfully: {}", response);
+            log.info("Email sent successfully with Response  : {} : to User :  {} ", response, to);
 
         } catch (Exception e) {
 
