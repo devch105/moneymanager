@@ -69,8 +69,16 @@ public class NotificationService {
 
                             + "</div>";
             String subject = "💰 Don't Forget to Track Today's Finances";
-            emailService.sendEmail(profile.getEmail(),subject,body);
-            log.info("Reminder Send  at 10PM  to : " + profile.getEmail());
+
+
+           try{
+               emailService.sendEmail(profile.getEmail(),subject,body);
+               log.info("Reminder Send  successfully at 10PM  to : " + profile.getEmail());
+               Thread.sleep(1000);
+           }catch (Exception e){
+               log.error("Error sending email to : " + profile.getEmail());
+               log.error("Error : "+e.getMessage());
+           }
         }
     }
 
@@ -154,9 +162,14 @@ public class NotificationService {
                                 + "</div>";
 
                 String subject = "📊 Your Daily Expense Summary";
-
-                emailService.sendEmail(profile.getEmail(), subject, body);
-                log.info("Reminder mail at 11PM send to : " + profile.getEmail());
+                try{
+                    emailService.sendEmail(profile.getEmail(),subject,body);
+                    log.info("Reminder Send  successfully  at 11PM  to : " + profile.getEmail());
+                    Thread.sleep(1000);
+                }catch (Exception e){
+                    log.error("Error sending email to : " + profile.getEmail());
+                    log.error("Error : "+e.getMessage());
+                }
             }
         }
     }
