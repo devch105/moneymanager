@@ -75,7 +75,7 @@ public class ProfileService {
        newProfile.setActivationToken(UUID.randomUUID().toString());
        newProfile = profileRepository.save(newProfile);
        // send activation link
-       String activationLink = activationUrl+"/api/v1.0/activate?token=" + newProfile.getActivationToken();
+       String activationLink = activationUrl+"/activate?token=" + newProfile.getActivationToken();
        String subject = "Activate your Money Manager Account";
        String emailBody = """
         <div style="font-family:Arial,sans-serif">
@@ -132,13 +132,20 @@ public class ProfileService {
        return toDTO(newProfile);
    }
 
-   public boolean activateProfile(String activationToken){
-       return profileRepository.findByActivationToken(activationToken)
-               .map(profileEntity -> { profileEntity.setIsActive(true);
-               profileRepository.save(profileEntity);
-               return true;
-               }).orElse(false);
-   }
+    public boolean activateProfile(String activationToken){
+        return profileRepository.findByActivationToken(activationToken)
+                .map(profileEntity -> {
+
+                    profileEntity.setIsActive(true);
+
+                    // prevent reuse
+                    profileEntity.setActivationToken(null);
+
+                    profileRepository.save(profileEntity);
+
+                    return true;
+                }).orElse(false);
+    }
 
     public boolean isEmailExists(String email){
         return profileRepository.findByEmail(email).isPresent();
