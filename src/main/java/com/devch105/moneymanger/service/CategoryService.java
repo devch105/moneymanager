@@ -49,11 +49,15 @@ public class CategoryService {
 
 
     public CategoryDTO updateCategory(Long id, CategoryDTO dto) {
+        System.out.println("See Category data : "+dto);
         ProfileEntity entity = profileService.getCurrentProfile();
          CategoryEntity categoryEntity = categoryRepository.findByIdAndProfileId(id, entity.getId()).orElseThrow(()-> new RuntimeException("Category not found"));
-
          categoryEntity.setName(dto.getName());
          categoryEntity.setIcon(dto.getIcon());
+         if(categoryEntity.getTransactionCount()!=0L){
+             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transactions count must be zero to change category Type");
+         }
+         categoryEntity.setType(dto.getType());
          categoryRepository.save(categoryEntity);
 
          return toDTO(categoryEntity);

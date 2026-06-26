@@ -124,8 +124,8 @@ public class EmailService {
                     .block();
 
             log.info(
-                    "Email with attachment sent: {}",
-                    response
+                    "Email with attachment sent: {} to {}" ,
+                    response,to
             );
 
         } catch (Exception e) {

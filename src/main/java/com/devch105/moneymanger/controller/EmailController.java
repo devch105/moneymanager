@@ -68,8 +68,8 @@ public class EmailController {
 
             emailService.sendEmailWithAttachment(
                     profileService.getCurrentProfile().getEmail(),
-                    "Income Report",
-                    "<h2>Your Income Report</h2>",
+                    "Expense Report",
+                    "<h2>Your Expense Report</h2>",
                     baos.toByteArray(),
                     "expense_report.xlsx"
             );
