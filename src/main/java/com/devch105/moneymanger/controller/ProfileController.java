@@ -1,7 +1,9 @@
 package com.devch105.moneymanger.controller;
 
 import com.devch105.moneymanger.dto.AuthDTO;
+import com.devch105.moneymanger.dto.EmailRequestDTO;
 import com.devch105.moneymanger.dto.ProfileDTO;
+import com.devch105.moneymanger.dto.ResendEmailRequestDTO;
 import com.devch105.moneymanger.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +23,12 @@ public class ProfileController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody AuthDTO authDTO) {
+    public ResponseEntity<?> login(@RequestBody AuthDTO authDTO) {
         try{
             if(authDTO == null){
-                return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("BAD_REQUEST","Invalid username or password"));
+                return  ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message","Email and password are required"));
             }else{
 
                 if(profileService.isAccountActive(authDTO.getEmail())){
@@ -32,11 +36,11 @@ public class ProfileController {
                     log.info("User Logged in Successfully Token Generated");
                     return ResponseEntity.ok(response);
                 }else{
-                    return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("FORBIDDEN NOT ACTIVE USER","Please activate your account"));
+                    return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message","Please verify your email before logging in."));
                 }
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Failed Login UNAUTHORIZED USER",e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message","Invalid Email or Password"));
         }
     }
 
@@ -46,6 +50,12 @@ public class ProfileController {
         ProfileDTO newProfile = profileService.registerProfile(profileDTO);
         log.info("New Profile Created Successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(newProfile);
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<?> resendVerificationEmail(@RequestBody EmailRequestDTO requestDTO) {
+        profileService.resendActivationEmail(requestDTO.getEmail());
+        return ResponseEntity.ok(Map.of("message","Verification Email Sent successfully"));
     }
 
     @GetMapping("/activate")

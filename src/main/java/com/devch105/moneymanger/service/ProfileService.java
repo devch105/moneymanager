@@ -75,20 +75,27 @@ public class ProfileService {
        newProfile.setActivationToken(UUID.randomUUID().toString());
        newProfile = profileRepository.save(newProfile);
        // send activation link
-       String activationLink = activationUrl+"/activate?token=" + newProfile.getActivationToken();
-       String subject = "Activate your Money Manager Account";
-       String emailBody = """
+      sendActivationEmail(newProfile);
+
+       return toDTO(newProfile);
+   }
+
+
+    private void sendActivationEmail(ProfileEntity profile) {
+
+        String activationLink =
+                activationUrl + "/activate?token=" + profile.getActivationToken();
+
+        String subject = "Activate your Money Manager Account";
+
+        String emailBody = """
         <div style="font-family:Arial,sans-serif">
 
             <h2>Welcome to Money Manager</h2>
 
-            <p>
-                Thank you for registering.
-            </p>
+            <p>Thank you for registering.</p>
 
-            <p>
-                Click the button below to activate your account:
-            </p>
+            <p>Click the button below to activate your account:</p>
 
             <a href="%s"
                style="
@@ -101,36 +108,44 @@ public class ProfileService {
                 Activate Account
             </a>
 
-            <p>
-                If the button does not work,
-                use the link below:
-            </p>
+            <p>If the button doesn't work, copy this link:</p>
 
             <p>%s</p>
 
         </div>
-        """.formatted(
-               activationLink,
-               activationLink
-       );
-       try {
+        """.formatted(activationLink, activationLink);
 
-           emailService.sendEmail(
-                   newProfile.getEmail(),
-                   subject,
-                   emailBody
-           );
+        try {
 
-       } catch (Exception e) {
+            emailService.sendEmail(
+                    profile.getEmail(),
+                    subject,
+                    emailBody
+            );
 
-           System.err.println(
-                   "Failed to send email: "
-                           + e.getMessage()
-           );
+        } catch (Exception e) {
 
+            System.err.println(
+                    "Failed to send email: "
+                            + e.getMessage()
+            );
+
+        }
+    }
+
+    @Transactional
+    public void resendActivationEmail(String email) {
+       ProfileEntity profile = profileRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
+       if(profile.getIsActive()){
+           throw new RuntimeException("User is already active.");
        }
-       return toDTO(newProfile);
-   }
+       profile.setActivationToken(UUID.randomUUID().toString());
+       profileRepository.save(profile);
+       sendActivationEmail(profile);
+    }
+
+
+
 
     public boolean activateProfile(String activationToken){
         return profileRepository.findByActivationToken(activationToken)

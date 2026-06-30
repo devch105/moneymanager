@@ -42,6 +42,7 @@ public class SecurtiyConfig {
                                     "/login/**",
                                     "/register/**",
                                     "/error/**",
+                            "/resend-verification",
                                     "/activate/**")
                                     .permitAll()
                             .anyRequest().authenticated())
