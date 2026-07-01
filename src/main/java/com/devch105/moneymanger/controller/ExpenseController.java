@@ -27,6 +27,13 @@ public class ExpenseController {
         return ResponseEntity.status(HttpStatus.OK).body(expenses);
     }
 
+    @GetMapping("/{year}/{month}")
+    public ResponseEntity<List<ExpenseDTO>> getExpenseByMonth(@PathVariable int year, @PathVariable int month){
+        System.out.println("Fetching expense by month");
+        List<ExpenseDTO> expenses = expenseService.getExpensesByMonth(year, month);
+        return ResponseEntity.status(HttpStatus.OK).body(expenses);
+    }
+
     @DeleteMapping("{expenseId}")
     public ResponseEntity<Void> deleteExpensesForCurrentUser(@PathVariable Long expenseId){
         expenseService.deleteExpense(expenseId);

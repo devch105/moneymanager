@@ -2,6 +2,7 @@ package com.devch105.moneymanger.service;
 
 import com.devch105.moneymanger.dto.AuthDTO;
 import com.devch105.moneymanger.dto.ProfileDTO;
+import com.devch105.moneymanger.dto.UpdateProfileDTO;
 import com.devch105.moneymanger.entity.ProfileEntity;
 import com.devch105.moneymanger.repository.ProfileRepository;
 import com.devch105.moneymanger.util.JWTUtil;
@@ -49,6 +50,30 @@ public class ProfileService {
 
    }
 
+   public void updateProfile(UpdateProfileDTO profileDTO){
+     try{
+
+         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(profileDTO.getEmail(),profileDTO.getOldPassword()));
+         ProfileEntity currentUser =  getCurrentProfile();
+         if(currentUser.getEmail().equals(profileDTO.getEmail())){
+             ProfileEntity profileEntity =  profileRepository.findByEmail(profileDTO.getEmail()).orElseThrow(()-> new UsernameNotFoundException("User not found in database : "+profileDTO.getEmail()));
+             profileEntity.setFullName(profileDTO.getFullName());
+             profileEntity.setProfileImageUrl(profileDTO.getProfileImageUrl());
+             profileEntity.setPassword(passwordEncoder.encode(profileDTO.getNewPassword()));
+             profileRepository.save(profileEntity);
+             log.info("Profile Updated : "+profileEntity);
+         }else{
+             throw new UsernameNotFoundException("Email Not Match: "+profileDTO.getEmail());
+         }
+
+     }catch(Exception e){
+         log.error("Profile Update Failed : "+e);
+         throw new UsernameNotFoundException("User not found in database : "+profileDTO.getEmail());
+
+     }
+
+   }
+
    public ProfileDTO getPublicProfile(String email){
        ProfileEntity user = null;
        if(email == null || email.isEmpty()){
@@ -79,6 +104,8 @@ public class ProfileService {
 
        return toDTO(newProfile);
    }
+
+
 
 
     private void sendActivationEmail(ProfileEntity profile) {

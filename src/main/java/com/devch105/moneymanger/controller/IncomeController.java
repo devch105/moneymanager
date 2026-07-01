@@ -24,9 +24,16 @@ public class IncomeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<IncomeDTO>> getMonthIncomes(){
-        log.info("Getting Incomes of Month");
+    public ResponseEntity<List<IncomeDTO>> getCurrentMonthIncomes(){
+        log.info("Getting Incomes of current Month");
         List<IncomeDTO> incomes = incomeService.getCurrentMonthIncomesForCurrentUser();
+        return ResponseEntity.status(HttpStatus.OK).body(incomes);
+    }
+
+    @GetMapping("/{year}/{month}")
+    public ResponseEntity<List<IncomeDTO>> getIncomesByMonth(@PathVariable int year, @PathVariable int month){
+        log.info("Getting Incomes of Year={} Month={}", year, month);
+        List<IncomeDTO> incomes = incomeService.getIncomesByMonth(year, month);
         return ResponseEntity.status(HttpStatus.OK).body(incomes);
     }
 

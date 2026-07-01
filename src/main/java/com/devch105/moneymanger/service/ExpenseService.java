@@ -7,6 +7,7 @@ import com.devch105.moneymanger.entity.ProfileEntity;
 import com.devch105.moneymanger.repository.CategoryRepository;
 import com.devch105.moneymanger.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ExpenseService {
 
     private final CategoryRepository categoryRepository;
@@ -36,6 +38,7 @@ public class ExpenseService {
     }
 
     // reterive expenses for current month or start date or enddate
+
     public List<ExpenseDTO> getCurrentMonthExpensesForCurrentUser(){
         ProfileEntity profile =  profileService.getCurrentProfile();
         LocalDate now = LocalDate.now();
@@ -46,6 +49,17 @@ public class ExpenseService {
 
        return entities.stream().map(this::toDTO).toList();
     }
+
+
+  public List<ExpenseDTO> getExpensesByMonth(int year, int month){
+        log.info("Getting expenses for year {} and month {}", year, month);
+        ProfileEntity profile = profileService.getCurrentProfile();
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate =    startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        List<ExpenseEntity> entities = expenseRepository.findByProfileIdAndDateBetween(profile.getId(),startDate,endDate);
+        return entities.stream().map(this::toDTO).toList();
+  }
 
     public  void  deleteExpense(Long ExpenseId){
        ProfileEntity profile =  profileService.getCurrentProfile();

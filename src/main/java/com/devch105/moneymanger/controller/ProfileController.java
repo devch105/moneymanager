@@ -1,9 +1,6 @@
 package com.devch105.moneymanger.controller;
 
-import com.devch105.moneymanger.dto.AuthDTO;
-import com.devch105.moneymanger.dto.EmailRequestDTO;
-import com.devch105.moneymanger.dto.ProfileDTO;
-import com.devch105.moneymanger.dto.ResendEmailRequestDTO;
+import com.devch105.moneymanger.dto.*;
 import com.devch105.moneymanger.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +39,17 @@ public class ProfileController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message","Invalid Email or Password"));
         }
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> updateProfile(@RequestBody UpdateProfileDTO profileDTO) {
+
+            if(profileDTO == null){
+              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","Email and password are required"));
+            }
+              profileService.updateProfile(profileDTO);
+            return ResponseEntity.ok(Map.of("message","Profile Updated"));
+
     }
 
 
