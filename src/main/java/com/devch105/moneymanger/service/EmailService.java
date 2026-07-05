@@ -23,7 +23,7 @@ public class EmailService {
     @Value("${resend.api.key}")
     private String apiKey;
 
-    @Value("${app.mail.from}")
+    @Value("${app.mail.from}") 
     private String fromEmail;
 
     @PostConstruct

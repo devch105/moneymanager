@@ -1,14 +1,19 @@
 package com.devch105.moneymanger.controller;
 
 import com.devch105.moneymanger.dto.*;
+import com.devch105.moneymanger.service.OtpService;
 import com.devch105.moneymanger.service.ProfileService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -17,7 +22,7 @@ import java.util.Map;
 public class ProfileController {
 
     private final ProfileService profileService;
-
+    private final OtpService otpService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthDTO authDTO) {
@@ -41,16 +46,45 @@ public class ProfileController {
         }
     }
 
+
     @PostMapping("/update")
-    public ResponseEntity<?> updateProfile(@RequestBody UpdateProfileDTO profileDTO) {
-
-            if(profileDTO == null){
-              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","Email and password are required"));
-            }
-              profileService.updateProfile(profileDTO);
-            return ResponseEntity.ok(Map.of("message","Profile Updated"));
-
+    public ResponseEntity<?> updateProfile( @RequestBody UpdateProfileDTO profileDTO) {
+        HashMap<String , String> map =    profileService.updateProfile(profileDTO);
+        if(map.get("status").equals("success")){
+            return ResponseEntity.ok(
+                    Map.of(
+                            "status", "success",
+                            "message", "Profile updated successfully"
+                    )
+            );
+        }else{
+            return ResponseEntity.ok(Map.of("message", "Successfully send OTP to your mail, Please Verify !","status", "pending"));
+        }
     }
+
+
+//    @PostMapping("/send-otp")
+//    public ResponseEntity<?> sendOTP(@Valid @RequestBody SendOtpDTO request){
+//        otpService.generateOtpAndMail(request.getEmail());
+//        return ResponseEntity.ok(Map.of("success", true, "message", "OTP sent successfully"));
+//    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOTP(@RequestBody VerifyOtpDTO request) throws JsonProcessingException {
+       HashMap<String,Object>  map =   profileService.updateAfterVerfication(request.getOtp());
+        if(map.get("status").equals("success")){
+            Object token = map.get("token");
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "OTP verified successfully",
+                    "token", token,
+                    "user", map.get("user")
+            ));
+        }else{
+            return ResponseEntity.ok(Map.of( "status","failed","message", "OTP verification failed"));
+        }
+    }
+
 
 
     @PostMapping("/register")
